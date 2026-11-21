@@ -1,7 +1,7 @@
 /* ===== Tami portfolio — contact details live here, change them once ===== */
 const CONFIG = {
   whatsapp: "2349072818333",          // WhatsApp number, country code, no + or spaces
-  phone: "09072818333",
+  phone: "09037521249",
   email: "contact.tamilabs@gmail.com",
   tiktok: "tami.szn"
 };
