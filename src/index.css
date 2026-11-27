@@ -1,0 +1,392 @@
+@import "tailwindcss";
+
+/* dark: utilities follow the site's own switch (data-theme on <html>), not only the device setting */
+@custom-variant dark (&:where([data-theme="dark"], [data-theme="dark"] *));
+
+/*
+  Palette: "Ember" — near-black panels, off-white type and signal orange, with a touch of icy blue
+  as the third colour (dots, small highlights). Dark is the default look; light is warm paper.
+  "ink" is the text colour and "page" the background, so they swap in dark mode.
+  "accent" is the orange, "spark" the icy blue; --grad is a subtle orange blend for buttons and accent words.
+  "band" is the always-dark strip colour (tools marquee, footer); "surface" is a raised panel.
+  To try another palette, change the values here, in the dark block, and the hero tokens below
+  (plus the five --color-ea-* defaults in components/tami-hero.tsx).
+*/
+@theme {
+  --color-page: #f3f1ec;
+  --color-paper: #e7e4dd;
+  --color-card: #faf9f6;
+  --color-surface: #ffffff;
+  --color-ink: #0b0b0c;
+  --color-muted: #5e5e63;
+  --color-faint: #8a8a90;
+  --color-accent: #f04a0e;
+  --color-accent-deep: #cf3c06;
+  --color-accent-tint: #ffe1d3;
+  --color-spark: #2f6feb;
+  --color-spark-tint: #dde8ff;
+  --color-on-accent: #0b0b0c;
+  --color-band: #0b0b0c;
+  --color-band-fg: #f2f2f0;
+  --color-line: rgb(11 11 12 / 0.1);
+
+  --font-display: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-sans: "Figtree", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, monospace;
+  --font-script: "Kaushan Script", "Segoe Script", cursive;
+
+  --animate-marquee: marquee 40s linear infinite;
+  --animate-float: float 7s ease-in-out infinite;
+  --animate-ping-soft: ping-soft 2.2s cubic-bezier(0, 0, 0.2, 1) infinite;
+
+  @keyframes marquee {
+    from { transform: translateX(0); }
+    to { transform: translateX(-50%); }
+  }
+  @keyframes float {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-8px); }
+  }
+  @keyframes ping-soft {
+    0% { transform: scale(1); opacity: 0.7; }
+    80%, 100% { transform: scale(2.6); opacity: 0; }
+  }
+}
+
+:root {
+  color-scheme: light;
+  --grad: linear-gradient(100deg, #f04a0e 0%, #ff6a2b 100%);
+  --glow: rgb(240 74 14 / 0.4);
+  --glass-from: rgb(255 255 255 / 0.85);
+  --glass-to: rgb(255 255 255 / 0.6);
+  --glass-border: rgb(11 11 12 / 0.09);
+  --glass-highlight: rgb(255 255 255 / 0.95);
+  --glass-shadow: rgb(20 15 10 / 0.2);
+  --glass-strong: rgb(250 249 246 / 0.92);
+  --grid-line: rgb(11 11 12 / 0.04);
+  --blob-a: rgb(240 74 14 / 0.1);
+  --blob-b: rgb(47 111 235 / 0.07);
+}
+
+/* ---------- Dark theme: the main look ---------- */
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --color-page: #0b0b0c;
+  --color-paper: #141416;
+  --color-card: #111113;
+  --color-surface: #18181b;
+  --color-ink: #f2f2f0;
+  --color-muted: #9b9ba1;
+  --color-faint: #6c6c72;
+  --color-accent: #ff4d12;
+  --color-accent-deep: #e63e05;
+  --color-accent-tint: #2a130b;
+  --color-spark: #9cc3ff;
+  --color-spark-tint: #131d2c;
+  --color-on-accent: #0b0b0c;
+  --color-band: #050506;
+  --color-band-fg: #f2f2f0;
+  --color-line: rgb(255 255 255 / 0.09);
+
+  --grad: linear-gradient(100deg, #ff4d12 0%, #ff7a35 100%);
+  --glow: rgb(255 77 18 / 0.4);
+  --glass-from: rgb(255 255 255 / 0.045);
+  --glass-to: rgb(255 255 255 / 0.015);
+  --glass-border: rgb(255 255 255 / 0.08);
+  --glass-highlight: rgb(255 255 255 / 0.05);
+  --glass-shadow: rgb(0 0 0 / 0.8);
+  --glass-strong: rgb(16 16 18 / 0.94);
+  --grid-line: rgb(255 255 255 / 0.03);
+  --blob-a: rgb(255 77 18 / 0.1);
+  --blob-b: rgb(156 195 255 / 0.06);
+}
+
+/* Smooth colour change when the theme is switched */
+html.theme-fade, html.theme-fade * {
+  transition: background-color 0.4s ease, border-color 0.4s ease, color 0.4s ease !important;
+}
+
+/* Base and component styles live in layers so Tailwind utilities (absolute, tracking-*, leading-*) always win */
+@layer base {
+html {
+  overflow-x: clip;
+  background: var(--color-page);
+  -webkit-tap-highlight-color: transparent;
+  scroll-padding-top: 96px;
+}
+
+html.lenis, html.lenis body { height: auto; }
+.lenis.lenis-smooth { scroll-behavior: auto !important; }
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  overflow-x: clip;
+  font-family: var(--font-sans);
+  color: var(--color-ink);
+  background: var(--color-page);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+h1, h2, h3, h4 {
+  font-family: var(--font-display);
+  letter-spacing: -0.04em;
+  line-height: 1.02;
+}
+
+/* Script titles: the cursive face needs its natural spacing and a little more line height */
+.font-script, h1.font-script, h2.font-script, h3.font-script {
+  font-family: var(--font-script);
+  letter-spacing: 0;
+  line-height: 1.08;
+}
+
+::selection { background: color-mix(in srgb, var(--color-accent) 25%, transparent); }
+
+:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 3px;
+  border-radius: 10px;
+}
+}
+
+@layer components {
+/* Gradient text and fills from the aurora blend */
+.text-grad {
+  background-image: var(--grad);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  /* room for the script's swashes so the clip never cuts them */
+  padding-inline: 0.06em;
+  margin-inline: -0.06em;
+}
+.bg-grad { background-image: var(--grad); }
+.glow { box-shadow: 0 12px 34px -12px var(--glow); }
+.glow:hover { box-shadow: 0 16px 42px -10px var(--glow); }
+}
+
+/* ---------- Hero tokens per theme ---------- */
+:root[data-theme="dark"] .tami-hero,
+:root[data-theme="dark"] .tami-hero .ea-hero {
+  --color-ea-page: #0b0b0c;
+  --color-ea-accent: #ff4d12;
+  --color-ea-ink: #f2f2f0;
+  --color-ea-muted: #9b9ba1;
+  --color-ea-paper: #141416;
+}
+/* The letter is a sheet of paper, so it keeps its light colours in both themes */
+:root[data-theme="dark"] .tami-hero .ea-pad {
+  --color-ea-page: #f3f1ec;
+  --color-ea-ink: #0b0b0c;
+  --color-ea-muted: #5e5e63;
+  --color-ea-accent: #f04a0e;
+}
+.tami-hero .ea-cta { border-color: color-mix(in srgb, var(--color-ea-ink) 40%, transparent); }
+
+/* A faint warm glow behind the hero, with a breath of icy blue */
+.tami-hero .ea-hero {
+  background:
+    radial-gradient(55% 45% at 72% 28%, color-mix(in srgb, var(--color-ea-accent) 10%, transparent), transparent 70%),
+    radial-gradient(45% 40% at 15% 85%, rgb(156 195 255 / 0.06), transparent 70%),
+    var(--color-ea-page);
+}
+
+/*
+  The name in script ("Tami Labs"): the hero's name, its splash and its logo use Kaushan Script in its own case.
+  "Labs" is drawn in toward "Tami" so the two read as one name, but stays clear of the portrait's head.
+*/
+.tami-hero.ea-script .ea-name,
+.tami-hero.ea-script .ea-splash-name,
+.tami-hero.ea-script .ea-nav-logo {
+  font-family: "Kaushan Script", "Segoe Script", cursive;
+  font-weight: 400;
+  text-transform: none;
+}
+.tami-hero.ea-script .ea-name-first,
+.tami-hero.ea-script .ea-name-last,
+.tami-hero.ea-script .ea-nav-logo { letter-spacing: 0; }
+.tami-hero.ea-script .ea-nav-logo { font-size: 34px; line-height: 1; }
+.tami-hero.ea-script .ea-name { line-height: 1; }
+.tami-hero.ea-script .ea-name-first { font-size: 33cqw; margin-left: -0.02em; }
+.tami-hero.ea-script .ea-name-last { font-size: 27cqw; margin-right: 8cqw; margin-top: -0.22em; }
+@media (min-width: 640px) {
+  .tami-hero.ea-script .ea-nav-logo { font-size: clamp(32px, 36 * var(--ea-nav-u), 40px); }
+}
+@media (min-width: 1024px) and (min-aspect-ratio: 5/4) {
+  .tami-hero.ea-script .ea-name-first {
+    top: calc(var(--ea-top) + 0.02em);
+    left: -0.02em;
+    font-size: calc(270 * var(--ea-u));
+  }
+  .tami-hero.ea-script .ea-name-last {
+    top: calc(var(--ea-last-top) - 0.1em);
+    right: calc(228 * var(--ea-u));
+    margin: 0;
+    font-size: calc(200 * var(--ea-u));
+  }
+}
+
+/*
+  The hero's portrait is a chest-up cut-out, wider than the original design's waist-up one.
+  On the wide layout it is drawn smaller and further right of the intro column, so the head sits
+  inside "TAMI" and the second word stays readable; its cut-off shoulders fade out softly.
+*/
+.tami-hero { --ea-portrait-ratio: 0.922; }
+.tami-hero .ea-portrait {
+  -webkit-mask-image: linear-gradient(to right, transparent 0%, #000 14%, #000 86%, transparent 100%);
+  mask-image: linear-gradient(to right, transparent 0%, #000 14%, #000 86%, transparent 100%);
+}
+.tami-hero .ea-intro-actions { display: none; }
+
+/*
+  Phones and tablets: the name on top, then the portrait large and centred on a glowing aurora panel,
+  rising just into the bottom of "LABS"; under the introduction, the two main buttons.
+*/
+@media not all and (min-width: 1024px) and (min-aspect-ratio: 5/4) {
+  .tami-hero .ea-stage { padding-block: 6px 48px; }
+  .tami-hero .ea-canvas { row-gap: 32px; }
+  .tami-hero .ea-figure::after {
+    width: 100%;
+    height: 82cqw;
+    margin: 3cqw 0 0;
+    border-radius: 28px;
+    background:
+      radial-gradient(70% 60% at 50% 80%, color-mix(in srgb, var(--color-ea-accent) 38%, transparent), transparent 72%),
+      radial-gradient(40% 35% at 88% 12%, rgb(156 195 255 / 0.18), transparent 70%),
+      var(--color-ea-paper);
+    box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--color-ea-ink) 8%, transparent);
+  }
+  .tami-hero .ea-portrait {
+    top: auto;
+    right: auto;
+    bottom: 0;
+    left: calc(50% - 40cqw);
+    height: 86.8cqw;
+  }
+  .tami-hero .ea-intro-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 26px;
+  }
+  .tami-hero .ea-intro-actions > * { flex: 1 1 150px; }
+  .tami-hero .ea-pad-inner { min-height: 300px; }
+}
+@media (min-width: 640px) and (max-width: 1023px), (min-width: 640px) and (max-aspect-ratio: 5/4) {
+  .tami-hero .ea-figure::after { height: 58cqw; }
+  .tami-hero .ea-portrait { left: calc(50% - 28cqw); height: 61cqw; }
+}
+@media (min-width: 1024px) and (min-aspect-ratio: 5/4) {
+  .tami-hero .ea-canvas {
+    --ea-portrait-h: min(100cqh - var(--ea-top) - 120 * var(--ea-u), 600 * var(--ea-u));
+    --ea-portrait-left: calc(285 * var(--ea-u));
+  }
+}
+
+@layer components {
+/* ---------- Soft living background behind the sections ---------- */
+.mesh {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+.mesh-blob {
+  position: absolute;
+  border-radius: 9999px;
+  filter: blur(100px);
+  will-change: transform;
+}
+.mesh-blob.b1 { width: 46vw; height: 46vw; left: -12vw; top: 4%; background: var(--blob-a); animation: drift-1 28s ease-in-out infinite; }
+.mesh-blob.b2 { width: 38vw; height: 38vw; right: -10vw; top: 30%; background: var(--blob-b); animation: drift-2 32s ease-in-out infinite; }
+.mesh-blob.b3 { width: 40vw; height: 40vw; left: 25vw; top: 60%; background: var(--blob-a); opacity: 0.6; animation: drift-3 36s ease-in-out infinite; }
+.mesh-blob.b4 { width: 34vw; height: 34vw; right: 5vw; top: 85%; background: var(--blob-b); opacity: 0.8; animation: drift-1 40s ease-in-out infinite reverse; }
+
+@keyframes drift-1 { 0%,100% { transform: translate(0,0) scale(1); } 50% { transform: translate(10vw, 6vh) scale(1.12); } }
+@keyframes drift-2 { 0%,100% { transform: translate(0,0) scale(1); } 50% { transform: translate(-12vw, 10vh) scale(0.9); } }
+@keyframes drift-3 { 0%,100% { transform: translate(0,0) scale(1); } 50% { transform: translate(8vw, -10vh) scale(1.1); } }
+
+.mesh-grid {
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(var(--grid-line) 1px, transparent 1px),
+    linear-gradient(90deg, var(--grid-line) 1px, transparent 1px);
+  background-size: 72px 72px;
+  mask-image: linear-gradient(to bottom, transparent, #000 8%, #000 92%, transparent);
+}
+
+/* ---------- Frosted glass ---------- */
+.glass {
+  position: relative;
+  background: linear-gradient(160deg, var(--glass-from), var(--glass-to));
+  border: 1px solid var(--glass-border);
+  backdrop-filter: blur(20px) saturate(150%);
+  -webkit-backdrop-filter: blur(20px) saturate(150%);
+  box-shadow:
+    inset 0 1px 0 var(--glass-highlight),
+    0 24px 60px -36px var(--glass-shadow);
+}
+.glass-strong { background: var(--glass-strong); }
+
+/* Pointer-following light on cards: set --mx/--my from JS */
+.spotlight { isolation: isolate; }
+.spotlight::before {
+  content: "";
+  position: absolute;
+  inset: -1px;
+  border-radius: inherit;
+  padding: 1px;
+  background: radial-gradient(
+    380px circle at var(--mx, 50%) var(--my, 0%),
+    var(--color-accent),
+    color-mix(in srgb, var(--color-spark) 60%, transparent) 40%,
+    transparent 70%
+  );
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  opacity: 0;
+  transition: opacity 0.4s;
+  pointer-events: none;
+  z-index: 2;
+}
+.spotlight::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: radial-gradient(460px circle at var(--mx, 50%) var(--my, 0%), color-mix(in srgb, var(--color-accent) 9%, transparent), transparent 60%);
+  opacity: 0;
+  transition: opacity 0.4s;
+  pointer-events: none;
+  z-index: -1;
+}
+.spotlight:hover::before, .spotlight:hover::after { opacity: 1; }
+
+/* Outlined display type, built from the letter silhouettes with the hero's #ea-ink-outline SVG filter */
+.text-outline {
+  color: var(--color-ink);
+  filter: url(#ea-ink-outline);
+}
+.text-outline-light {
+  color: var(--color-band-fg);
+  filter: url(#ea-ink-outline);
+}
+
+.flow { stroke-dasharray: 4 8; animation: flow 1.4s linear infinite; }
+@keyframes flow { to { stroke-dashoffset: -24; } }
+
+.fade-x { mask-image: linear-gradient(90deg, transparent, #000 12%, #000 88%, transparent); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
+}
